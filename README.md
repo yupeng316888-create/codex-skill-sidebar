@@ -23,6 +23,17 @@ This project is built for Apple Terminal on macOS. The sidebar is a floating uti
 
 ## Quick start
 
+Homebrew:
+
+```bash
+brew install --formula https://raw.githubusercontent.com/yupeng316888-create/codex-skill-sidebar/main/Formula/codex-skill-sidebar.rb
+codex-skill-sidebar install
+source ~/.zshrc
+codex
+```
+
+Direct installer:
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/yupeng316888-create/codex-skill-sidebar/main/install.sh | bash
 source ~/.zshrc
@@ -61,7 +72,22 @@ Optional:
 
 ## Install
 
-One-line install:
+Recommended for most users:
+
+With Homebrew:
+
+```bash
+brew install --formula https://raw.githubusercontent.com/yupeng316888-create/codex-skill-sidebar/main/Formula/codex-skill-sidebar.rb
+codex-skill-sidebar install
+```
+
+Why this flow is useful:
+
+- `brew upgrade` can pick up new releases later
+- `brew uninstall` removes the helper command cleanly
+- `codex-skill-sidebar install` handles the Codex-specific setup in your home directory
+
+Without Homebrew:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/yupeng316888-create/codex-skill-sidebar/main/install.sh | bash
@@ -72,6 +98,7 @@ What it does:
 - installs the launcher and sidebar into `~/.local/bin`
 - adds `codex` and `CodeX` wrappers to `~/.zshrc`
 - ensures `apps = false` exists under `[features]` in `~/.codex/config.toml`
+- in the Homebrew flow, also installs a helper command: `codex-skill-sidebar`
 
 Before you run it:
 
@@ -95,6 +122,7 @@ More beginner help:
 
 - See `INSTALL.md` for the short version
 - Use `uninstall.sh` if you want to roll back quickly
+- Or use `codex-skill-sidebar doctor` to check your local setup
 
 Manual install:
 
@@ -124,6 +152,15 @@ Manual install:
    ```
 
 ## Uninstall
+
+Homebrew install:
+
+```bash
+codex-skill-sidebar uninstall
+brew uninstall codex-skill-sidebar
+```
+
+Direct install:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/yupeng316888-create/codex-skill-sidebar/main/uninstall.sh | bash
@@ -175,7 +212,7 @@ Newly installed skills show up on next launch, or immediately after refresh with
 
 ## Development notes
 
-- The launcher expects the real Codex binary at `/usr/local/bin/codex`
+- The launcher checks `CODEX_BIN`, then the current `PATH`, then `/usr/local/bin/codex`, then `/opt/homebrew/bin/codex`
 - The sidebar reads skills from `~/.codex/skills`
 - GitHub publishing in proxy-heavy environments works reliably over SSH on `ssh.github.com:443`
 

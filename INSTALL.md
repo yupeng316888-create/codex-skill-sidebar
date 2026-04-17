@@ -1,6 +1,15 @@
 # Install Guide
 
-## One-line install
+## Recommended install
+
+With Homebrew:
+
+```bash
+brew install --formula https://raw.githubusercontent.com/yupeng316888-create/codex-skill-sidebar/main/Formula/codex-skill-sidebar.rb
+codex-skill-sidebar install
+```
+
+Without Homebrew:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/yupeng316888-create/codex-skill-sidebar/main/install.sh | bash
@@ -12,6 +21,12 @@ Then run:
 source ~/.zshrc
 codex
 ```
+
+If you use Homebrew, you also get:
+
+- `codex-skill-sidebar doctor`
+- `brew upgrade` for future updates
+- `brew uninstall codex-skill-sidebar` for removing the helper command later
 
 ## What the installer does
 
@@ -49,6 +64,15 @@ Not using `zsh`
 - Or use the manual install steps from `README.md`
 
 ## Uninstall
+
+Homebrew install:
+
+```bash
+codex-skill-sidebar uninstall
+brew uninstall codex-skill-sidebar
+```
+
+Direct install:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/yupeng316888-create/codex-skill-sidebar/main/uninstall.sh | bash

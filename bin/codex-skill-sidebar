@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+PLACEHOLDER_SOURCE_DIR="__CODEX""_SIDEBAR_SOURCE_DIR__"
+DEFAULT_SOURCE_DIR="__CODEX_SIDEBAR_SOURCE_DIR__"
+if [[ "${DEFAULT_SOURCE_DIR}" == "${PLACEHOLDER_SOURCE_DIR}" ]] || [[ ! -f "${DEFAULT_SOURCE_DIR}/install.sh" ]]; then
+  DEFAULT_SOURCE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+fi
+SOURCE_DIR="${CODEX_SIDEBAR_SOURCE_DIR:-${DEFAULT_SOURCE_DIR}}"
+
+usage() {
+  cat <<'EOF'
+Usage:
+  codex-skill-sidebar install
+  codex-skill-sidebar uninstall
+  codex-skill-sidebar doctor
+EOF
+}
+
+doctor() {
+  echo "codex-skill-sidebar doctor"
+  echo "source dir: ${SOURCE_DIR}"
+  echo "shell: ${SHELL:-unknown}"
+  if command -v codex >/dev/null 2>&1; then
+    echo "codex: $(command -v codex)"
+  else
+    echo "codex: not found"
+  fi
+  if command -v python3 >/dev/null 2>&1; then
+    echo "python3: $(command -v python3)"
+  else
+    echo "python3: not found"
+  fi
+}
+
+main() {
+  case "${1:-install}" in
+    install)
+      CODEX_SIDEBAR_SOURCE_DIR="${SOURCE_DIR}" bash "${SOURCE_DIR}/install.sh"
+      ;;
+    uninstall|remove)
+      bash "${SOURCE_DIR}/uninstall.sh"
+      ;;
+    doctor)
+      doctor
+      ;;
+    help|-h|--help)
+      usage
+      ;;
+    *)
+      usage
+      exit 1
+      ;;
+  esac
+}
+
+main "$@"

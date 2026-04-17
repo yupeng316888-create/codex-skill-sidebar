@@ -40,9 +40,17 @@ need_cmd() {
   fi
 }
 
+has_local_source() {
+  [[ -n "${CODEX_SIDEBAR_SOURCE_DIR:-}" ]] && [[ -d "${CODEX_SIDEBAR_SOURCE_DIR}" ]]
+}
+
 fetch_file() {
   local remote_path="$1"
   local output_path="$2"
+  if [[ -n "${CODEX_SIDEBAR_SOURCE_DIR:-}" ]] && [[ -f "${CODEX_SIDEBAR_SOURCE_DIR}/${remote_path}" ]]; then
+    cp "${CODEX_SIDEBAR_SOURCE_DIR}/${remote_path}" "${output_path}"
+    return
+  fi
   if ! curl -fsSL "${REPO_RAW_BASE}/${remote_path}" -o "${output_path}"; then
     die "could not download ${remote_path}. Check your network connection and try again."
   fi
@@ -190,8 +198,10 @@ EOF
 
 main() {
   check_platform
-  need_cmd curl
   need_cmd python3
+  if ! has_local_source; then
+    need_cmd curl
+  fi
   check_shell
   check_python_tk
   check_codex
