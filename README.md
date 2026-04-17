@@ -70,6 +70,24 @@ What it does:
 - adds `codex` and `CodeX` wrappers to `~/.zshrc`
 - ensures `apps = false` exists under `[features]` in `~/.codex/config.toml`
 
+Before you run it:
+
+- macOS only
+- `zsh` shell
+- `python3` with `tkinter`
+- Codex CLI already installed
+
+If install fails:
+
+- `curl` missing
+  Run `xcode-select --install`, then rerun the installer
+- `python3` or `tkinter` missing
+  Install a Python 3 build with `tkinter`, then rerun the installer
+- `codex` missing
+  Install the Codex CLI first, then rerun the installer
+- not using `zsh`
+  Switch to `zsh` or use the manual install steps
+
 Manual install:
 
 1. Copy the scripts into your local bin directory:
@@ -96,6 +114,12 @@ Manual install:
    ```bash
    codex
    ```
+
+## Uninstall
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/yupeng316888-create/codex-skill-sidebar/main/uninstall.sh | bash
+```
 
 ## Usage
 
@@ -157,7 +181,7 @@ Newly installed skills show up on next launch, or immediately after refresh with
 
 - Add optional screenshot assets to the repo landing page
 - Improve non-Terminal.app support
-- Add a more formal installer script
+- Broaden shell support beyond `zsh`
 
 ## License
 

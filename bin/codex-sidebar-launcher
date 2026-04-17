@@ -14,23 +14,53 @@ import tty
 from pathlib import Path
 
 
-CODEX_BIN = "/usr/local/bin/codex"
 SIDEBAR_SCRIPT = Path.home() / ".local" / "bin" / "codex-skill-sidebar.py"
 SKILLS_DIR = Path.home() / ".codex" / "skills"
 
 
+def find_codex_bin() -> str | None:
+    env_path = os.environ.get("CODEX_BIN")
+    candidates = [
+        env_path,
+        shutil.which("codex"),
+        "/usr/local/bin/codex",
+        "/opt/homebrew/bin/codex",
+    ]
+
+    seen: set[str] = set()
+    for candidate in candidates:
+        if not candidate or candidate in seen:
+            continue
+        seen.add(candidate)
+        if os.path.exists(candidate) and os.access(candidate, os.X_OK):
+            return candidate
+    return None
+
+
 def should_passthrough(argv: list[str]) -> bool:
+    codex_bin = find_codex_bin()
     return (
         len(argv) > 1
         or not sys.stdin.isatty()
         or not sys.stdout.isatty()
         or not SIDEBAR_SCRIPT.exists()
-        or not os.path.exists(CODEX_BIN)
+        or codex_bin is None
     )
 
 
 def exec_codex(argv: list[str]) -> None:
-    os.execv(CODEX_BIN, [CODEX_BIN, *argv[1:]])
+    codex_bin = find_codex_bin()
+    if codex_bin is None:
+        print(
+            "codex-skill-sidebar could not find the Codex CLI.",
+            file=sys.stderr,
+        )
+        print(
+            "Install Codex first, or set CODEX_BIN to the full codex path.",
+            file=sys.stderr,
+        )
+        raise SystemExit(1)
+    os.execv(codex_bin, [codex_bin, *argv[1:]])
 
 
 def terminal_window_id() -> str | None:
@@ -89,9 +119,12 @@ def spawn_sidebar(session_id: str, socket_path: str) -> subprocess.Popen[bytes]:
 
 
 def launch_codex_pty() -> tuple[int, int]:
+    codex_bin = find_codex_bin()
+    if codex_bin is None:
+        raise RuntimeError("Codex CLI not found")
     pid, master_fd = pty.fork()
     if pid == 0:
-        os.execv(CODEX_BIN, [CODEX_BIN])
+        os.execv(codex_bin, [codex_bin])
     return pid, master_fd
 
 
