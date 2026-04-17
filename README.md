@@ -37,7 +37,7 @@ codex
 
 Codex with the docked sidebar
 
-![Codex terminal with sidebar](assets/screenshots/with-sidebar.png)
+![Codex skill sidebar](assets/screenshots/with-sidebar.png)
 
 ## What is included
 
