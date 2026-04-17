@@ -39,6 +39,8 @@ Codex with the docked sidebar
 
 ![Codex skill sidebar](assets/screenshots/with-sidebar.png)
 
+![Codex 带有停靠侧边栏](assets/screenshots/with-sidebar.png)
+
 ## What is included
 
 - `bin/codex-sidebar-launcher`
