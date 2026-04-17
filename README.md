@@ -29,11 +29,14 @@ source ~/.zshrc
 codex
 ```
 
+Beginner-friendly install guide: `INSTALL.md`
+
 ## Screenshots
 
 Skills sidebar manager
 
 ![Skills 侧边管理栏](assets/screenshots/with-sidebar.png)
+
 ## What is included
 
 - `bin/codex-sidebar-launcher`
@@ -87,6 +90,11 @@ If install fails:
   Install the Codex CLI first, then rerun the installer
 - not using `zsh`
   Switch to `zsh` or use the manual install steps
+
+More beginner help:
+
+- See `INSTALL.md` for the short version
+- Use `uninstall.sh` if you want to roll back quickly
 
 Manual install:
 

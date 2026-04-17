@@ -18,12 +18,9 @@ info() {
   printf '%s\n' "$1"
 }
 
-warn() {
-  printf 'Warning: %s\n' "$1" >&2
-}
-
 die() {
   printf 'Install failed: %s\n' "$1" >&2
+  printf '安装失败：%s\n' "$1" >&2
   exit 1
 }
 
@@ -179,10 +176,15 @@ PY
 print_next_steps() {
   cat <<'EOF'
 Installed codex-skill-sidebar.
+已安装 codex-skill-sidebar。
 
 Next:
   1. Run: source ~/.zshrc
   2. Start Codex with: codex
+
+下一步：
+  1. 运行：source ~/.zshrc
+  2. 启动 Codex：codex
 EOF
 }
 
@@ -195,6 +197,7 @@ main() {
   check_codex
 
   info "Installing codex-skill-sidebar..."
+  info "正在安装 codex-skill-sidebar..."
   install_binaries
   install_zsh_hook
   install_codex_config

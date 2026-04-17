@@ -61,7 +61,9 @@ main() {
   remove_zsh_hook
   remove_codex_config
   printf '%s\n' 'Removed codex-skill-sidebar.'
+  printf '%s\n' '已移除 codex-skill-sidebar。'
   printf '%s\n' 'Run: source ~/.zshrc'
+  printf '%s\n' '运行：source ~/.zshrc'
 }
 
 main "$@"
