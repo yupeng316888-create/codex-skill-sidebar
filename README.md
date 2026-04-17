@@ -37,9 +37,21 @@ codex
 
 Codex with the docked sidebar
 
-![Codex skill sidebar](assets/screenshots/with-sidebar.png)
+![Codex terminal with sidebar](assets/screenshots/with-sidebar.png)
 
 ![Codex 带有停靠侧边栏](assets/screenshots/with-sidebar.png)
+
+Overview
+
+![Sidebar overview](assets/screenshots/sidebar-overview.png)
+
+Selected skill
+
+![Selected browse skill](assets/screenshots/sidebar-selected-browse.png)
+
+Filtered search
+
+![Search results for design](assets/screenshots/sidebar-search-design.png)
 
 ## What is included
 
