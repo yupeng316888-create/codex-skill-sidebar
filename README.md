@@ -39,18 +39,7 @@ Codex with the docked sidebar
 
 ![Codex terminal with sidebar](assets/screenshots/terminal-with-sidebar.png)
 
-Overview
-
-![Sidebar overview](assets/screenshots/sidebar-overview.png)
-
-Selected skill
-
-![Selected browse skill](assets/screenshots/sidebar-selected-browse.png)
-
-Filtered search
-
-![Search results for design](assets/screenshots/sidebar-search-design.png)
-
+![Codex terminal with sidebar](assets/screenshots/terminal-with-sidebar.png)
 ## What is included
 
 - `bin/codex-sidebar-launcher`
