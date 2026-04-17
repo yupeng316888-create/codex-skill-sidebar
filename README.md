@@ -35,6 +35,10 @@ codex
 
 ## Screenshots
 
+Codex with the docked sidebar
+
+![Codex terminal with sidebar](assets/screenshots/terminal-with-sidebar.png)
+
 Overview
 
 ![Sidebar overview](assets/screenshots/sidebar-overview.png)
