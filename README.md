@@ -35,10 +35,9 @@ codex
 
 ## Screenshots
 
-Codex with the docked sidebar
+Skills sidebar manager
 
-![Codex terminal with sidebar](assets/screenshots/with-sidebar.png)
-
+![Skills 侧边管理栏](assets/screenshots/with-sidebar.png)
 ## What is included
 
 - `bin/codex-sidebar-launcher`
