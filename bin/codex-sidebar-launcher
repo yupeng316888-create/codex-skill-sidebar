@@ -1,0 +1,188 @@
+#!/usr/bin/env python3
+
+import os
+import pty
+import select
+import shutil
+import signal
+import socket
+import subprocess
+import sys
+import termios
+import tempfile
+import tty
+from pathlib import Path
+
+
+CODEX_BIN = "/usr/local/bin/codex"
+SIDEBAR_SCRIPT = Path.home() / ".local" / "bin" / "codex-skill-sidebar.py"
+SKILLS_DIR = Path.home() / ".codex" / "skills"
+
+
+def should_passthrough(argv: list[str]) -> bool:
+    return (
+        len(argv) > 1
+        or not sys.stdin.isatty()
+        or not sys.stdout.isatty()
+        or not SIDEBAR_SCRIPT.exists()
+        or not os.path.exists(CODEX_BIN)
+    )
+
+
+def exec_codex(argv: list[str]) -> None:
+    os.execv(CODEX_BIN, [CODEX_BIN, *argv[1:]])
+
+
+def terminal_window_id() -> str | None:
+    if sys.platform != "darwin":
+        return None
+    try:
+        result = subprocess.run(
+            ["osascript", "-e", 'tell application "Terminal" to id of front window'],
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=1,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None
+    value = result.stdout.strip()
+    return value if result.returncode == 0 and value else None
+
+
+def get_winsize(fd: int) -> bytes:
+    return termios.tcgetwinsize(fd)
+
+
+def set_winsize(fd: int, winsize: bytes) -> None:
+    rows, cols = winsize
+    termios.tcsetwinsize(fd, (rows, cols))
+
+
+def spawn_sidebar(session_id: str, socket_path: str) -> subprocess.Popen[bytes]:
+    log_path = Path(tempfile.gettempdir()) / f"{session_id}.log"
+    window_id = terminal_window_id()
+    args = [
+        sys.executable,
+        str(SIDEBAR_SCRIPT),
+        "--skills-dir",
+        str(SKILLS_DIR),
+        "--session-id",
+        session_id,
+        "--socket-path",
+        socket_path,
+        "--parent-pid",
+        str(os.getpid()),
+    ]
+    if window_id:
+        args.extend(["--window-id", window_id])
+
+    log_file = open(log_path, "ab")
+    return subprocess.Popen(
+        args,
+        stdin=subprocess.DEVNULL,
+        stdout=log_file,
+        stderr=subprocess.STDOUT,
+        start_new_session=True,
+        close_fds=True,
+    )
+
+
+def launch_codex_pty() -> tuple[int, int]:
+    pid, master_fd = pty.fork()
+    if pid == 0:
+        os.execv(CODEX_BIN, [CODEX_BIN])
+    return pid, master_fd
+
+
+def main() -> int:
+    argv = sys.argv
+    if should_passthrough(argv):
+        exec_codex(argv)
+
+    session_dir = Path(tempfile.mkdtemp(prefix="codex-sidebar-"))
+    socket_path = str(session_dir / "inject.sock")
+    session_id = f"codex-sidebar-{os.getpid()}-{int(os.times().elapsed)}"
+
+    server = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
+    server.bind(socket_path)
+    server.setblocking(False)
+
+    sidebar = spawn_sidebar(session_id, socket_path)
+    child_pid, master_fd = launch_codex_pty()
+
+    stdin_fd = sys.stdin.fileno()
+    stdout_fd = sys.stdout.fileno()
+    old_attrs = termios.tcgetattr(stdin_fd)
+    tty.setraw(stdin_fd)
+
+    def cleanup(*_args) -> None:
+        try:
+            termios.tcsetattr(stdin_fd, termios.TCSADRAIN, old_attrs)
+        except termios.error:
+            pass
+        try:
+            sidebar.terminate()
+        except OSError:
+            pass
+        try:
+            server.close()
+        except OSError:
+            pass
+        try:
+            os.close(master_fd)
+        except OSError:
+            pass
+        shutil.rmtree(session_dir, ignore_errors=True)
+
+    def handle_sigwinch(_signum, _frame) -> None:
+        try:
+            set_winsize(master_fd, get_winsize(stdin_fd))
+        except OSError:
+            pass
+
+    signal.signal(signal.SIGWINCH, handle_sigwinch)
+    handle_sigwinch(signal.SIGWINCH, None)
+
+    exit_code = 0
+    try:
+        while True:
+            readable, _, _ = select.select([stdin_fd, master_fd, server.fileno()], [], [])
+            if stdin_fd in readable:
+                try:
+                    data = os.read(stdin_fd, 4096)
+                except OSError:
+                    data = b""
+                if not data:
+                    break
+                os.write(master_fd, data)
+
+            if server.fileno() in readable:
+                try:
+                    injected = server.recv(4096)
+                except OSError:
+                    injected = b""
+                if injected:
+                    os.write(master_fd, injected)
+
+            if master_fd in readable:
+                try:
+                    data = os.read(master_fd, 4096)
+                except OSError:
+                    data = b""
+                if not data:
+                    break
+                os.write(stdout_fd, data)
+    finally:
+        cleanup()
+        _, status = os.waitpid(child_pid, 0)
+        if os.WIFEXITED(status):
+            exit_code = os.WEXITSTATUS(status)
+        elif os.WIFSIGNALED(status):
+            exit_code = 128 + os.WTERMSIG(status)
+
+    return exit_code
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
