@@ -24,11 +24,7 @@ This project is built for Apple Terminal on macOS. The sidebar is a floating uti
 ## Quick start
 
 ```bash
-mkdir -p ~/.local/bin
-cp bin/codex-sidebar-launcher ~/.local/bin/
-cp bin/codex-skill-sidebar.py ~/.local/bin/
-chmod +x ~/.local/bin/codex-sidebar-launcher ~/.local/bin/codex-skill-sidebar.py
-cat config/zshrc.snippet >> ~/.zshrc
+curl -fsSL https://raw.githubusercontent.com/yupeng316888-create/codex-skill-sidebar/main/install.sh | bash
 source ~/.zshrc
 codex
 ```
@@ -61,6 +57,20 @@ Optional:
 - `pyobjc` for better multi-display screen edge detection
 
 ## Install
+
+One-line install:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/yupeng316888-create/codex-skill-sidebar/main/install.sh | bash
+```
+
+What it does:
+
+- installs the launcher and sidebar into `~/.local/bin`
+- adds `codex` and `CodeX` wrappers to `~/.zshrc`
+- ensures `apps = false` exists under `[features]` in `~/.codex/config.toml`
+
+Manual install:
 
 1. Copy the scripts into your local bin directory:
 
