@@ -37,9 +37,8 @@ codex
 
 Codex with the docked sidebar
 
-![Codex terminal with sidebar](assets/screenshots/terminal-with-sidebar.png)
+![Codex terminal with sidebar](assets/screenshots/with-sidebar.png)
 
-![Codex terminal with sidebar](assets/screenshots/terminal-with-sidebar.png)
 ## What is included
 
 - `bin/codex-sidebar-launcher`
